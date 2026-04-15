@@ -1,0 +1,7 @@
+interface:
+  display_name: "Partner Skill"
+  short_description: "Route complex tasks through Brain, Hands, Review, and A/B gates"
+  default_prompt: "Use $partner-skill to choose one Brain owner, coordinate 0-2 advisors, assign Hands through an execution contract, and close with Review. If the user asks for evaluation or iteration, run the A/B evaluation protocol."
+
+policy:
+  allow_implicit_invocation: true

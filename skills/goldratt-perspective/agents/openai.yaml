@@ -1,0 +1,8 @@
+interface:
+  display_name: "Goldratt Perspective"
+  short_description: "Find the real constraint, protect flow, and pressure-test throughput over local optimization"
+  default_prompt: "Use $goldratt-perspective to analyze bottlenecks, queues, throughput, buffers, and critical-chain style constraints with Goldratt's logic."
+
+policy:
+  allow_implicit_invocation: true
+

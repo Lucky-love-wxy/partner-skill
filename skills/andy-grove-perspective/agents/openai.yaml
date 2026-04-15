@@ -1,0 +1,8 @@
+interface:
+  display_name: "Andy Grove Perspective"
+  short_description: "Pressure-test operations systems, metrics, control loops, and strategic inflection points"
+  default_prompt: "Use $andy-grove-perspective to analyze operating systems, indicators, management cadence, leverage, and strategic inflection points with Andy Grove style judgment."
+
+policy:
+  allow_implicit_invocation: true
+

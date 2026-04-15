@@ -1,0 +1,8 @@
+interface:
+  display_name: "Atul Gawande Perspective"
+  short_description: "Pressure-test medical reliability, checklists, handoffs, and humane systems in complex workflows"
+  default_prompt: "Use $atul-gawande-perspective to analyze medical reliability, checklists, handoffs, coaching, and humane workflow design with Atul Gawande style judgment."
+
+policy:
+  allow_implicit_invocation: true
+
