@@ -1,199 +1,223 @@
 ---
 name: partner-skill
-description: 统一调度多角色 skill 的 manager-agent 协议。用于复杂任务中选择一个 owner role 作为 Brain，再选择 0-2 个 advisor roles 补盲点，把执行交给 Hands 契约，并用 Review / A/B comparator 验收结果。适用于用户要求多角色协作、主导者判断、认真执行、完整闭环、两轮 review、A/B 对比、评估某个 skill 是否更好，或需要协调 Jobs/Kandle/Coding/Elon/Andy Grove/Goldratt/Atul Gawande 等角色时触发。
+description: Govern complex multi-role AI work by classifying task mode before routing skills. Use when the first decision should be governance strength rather than domain expertise. The skill chooses quick, managed, or package mode, selects one owner role, limits advisors to 0-2, governs execution through Brain/Hands/Review, and upgrades to A/B evaluation or audit when needed. Trigger when the user asks who should lead, who should collaborate, how to coordinate multiple roles, how to execute a task seriously end-to-end, or how to prove a candidate workflow is better than the incumbent.
 ---
 
 # Partner Skill
 
-> 不是让所有角色一起说话。是让一个 Brain 负责判断，让 Hands 稳定执行，再用 Review 证明结果。
+> First decide how much governance this task deserves. Then decide who should lead it.
 
-## 核心定位
+## Core Position
 
-这是一个总调度 skill。
-它不替代专家 skill，只负责把任务变成可管理的协作系统。
+This is a governance skill.
 
-它必须完成六件事：
+It is responsible for:
 
-1. 判断任务主层级
-2. 选择一个 owner role 作为 `Brain`
-3. 选择 0-2 个 advisor roles 补盲点
-4. 把执行动作交给 `Hands` 契约
-5. 用冲突规则处理分歧
-6. 用 `Brain / Action / Review` 或 A/B comparator 收口
+1. task-mode classification
+2. owner selection
+3. advisor selection
+4. output protocol control
+5. escalation to stronger review or audit
 
-## 先验纠偏
+It is not responsible for:
 
-不要把本 skill 当成“多角色发言模板”。
-正确模型是 manager-agent：
+- becoming the domain expert
+- replacing specialist judgment
+- producing domain content just because it can
 
-- `Brain` 负责推理、取舍、拍板和目标一致性
-- `Hands` 负责工具执行、状态管理、重试、权限和失败码
-- `Review` 负责证据、回归、A/B 对比和残余风险
+`Jobs`, `Kandle`, `Coding`, `Elon`, `Andy Grove`, `Goldratt`, and `Atul Gawande` own domain judgment.
+`partner-skill` governs the workflow around them.
 
-当任务进入长链路、代码修改、批量处理、skill 迭代或 A/B 评估时，必须读取 `references/manager-agent-protocol.md`。
+## First Responsibility: Task-Mode Classification
 
-## 什么时候用
+Before routing any role, classify the task into one of three modes:
 
-优先触发：
+- `quick`
+- `managed`
+- `package`
 
-- 用户有多角色体系，不想手动点名
-- 问题同时涉及产品、调研、技术、代码、运营、医疗可靠性或约束流
-- 用户问“谁主导”“谁来协作”“这些 skill 怎么调度”
-- 用户要求“认真执行”“完整执行”“一整包”“调查 + 修改 + 验证”“两轮 review”
-- 用户要求评估、迭代、A/B 测试某个 skill 或工作流
+Read `references/task-mode-classification.md` when the mode is not obvious.
 
-不要触发：
+### quick
 
-- 单一、短小、无需角色分工的普通问答
-- 用户已经明确指定单个 perspective skill 且不需要调度
-- 只需要翻译、润色、摘要，不涉及决策或执行闭环
+Use for low-complexity tasks with one owner, small process surface, and limited coordination cost.
 
-## 工作模式
-
-### 协调模式
-
-默认模式。用于判断 owner/advisors 并输出 Brain / Action / Review。
-
-### 认真执行模式
-
-当用户要求完整交付、两轮 review、持续执行或任务明显跨多个工作包时启用。
-启用后读取：
-
-- `references/serious-execution-protocol.md`
-- `references/serious-execution-templates.md`
-- 必要时读取 `references/manager-agent-protocol.md`
-
-### A/B 评估模式
-
-当用户要求“评估这个 skill”“迭代一次”“通过 A/B 测试”“证明新版更好”时启用。
-启用后读取 `references/ab-evaluation-protocol.md`，并把比较对象明确成：
-
-- `incumbent`：当前版本或不用 partner-skill 的 baseline
-- `candidate`：本轮修改后的版本或使用 partner-skill 的版本
-
-只有 candidate 通过 gate，才允许说“更好”。
-
-## 角色池
-
-角色详细映射放在 `references/role-routing-matrix.md`。
-主文档只保留调度纪律：
-
-- owner 只能有一个
-- advisor 默认 0-2 个
-- advisor 只补 owner 缺的层
-- advisor 不得替 owner 拍板
-- owner 必须说明采纳什么、不采纳什么、为什么
-
-## 路由流程
-
-1. 压缩用户问题
-   - 目标
-   - 约束
-   - 成功标准
-   - 当前未知点
-
-2. 判断任务层级
-   - `product-direction`
-   - `external-research`
-   - `technical-direction`
-   - `implementation`
-   - `operations-control`
-   - `constraint-flow`
-   - `medical-reliability`
-   - `mixed`
-
-3. 选择 owner
-   - 按最终拍板责任选 owner
-   - 不要让多个角色平权发言
-   - mixed 任务按“最后谁负责结果”选 owner
-
-4. 选择 advisors
-   - 只选能修正盲点的角色
-   - 默认不超过 2 个
-   - 不为了热闹而增加角色
-
-5. 形成 Brain 判断
-   - owner 先给主判断、切入点、优先问题
-   - advisors 分别给有边界的补充
-   - owner 综合后拍板
-
-6. 形成 Hands 契约
-   - 需要执行时，把动作写成标准任务契约
-   - 工具细节不直接暴露给 Brain
-   - 重试、权限、文件状态、失败码属于执行层
-
-7. Review 收口
-   - 事实证据
-   - 已做验证
-   - blocker
-   - 残余风险
-   - 下一步
-
-## 输出格式
-
-协调模式至少输出：
+Required output:
 
 ```markdown
-Owner: <role>
-Advisors: <0-2 roles>
-
-Brain:
-- 目标:
-- 事实:
-- 假设:
-- 风险:
-- 推荐路径:
-
+Goal:
 Action:
-- 下一步:
-- 执行契约:
-- 验证方式:
-
-Review:
-- 已验证:
-- blocker:
-- 残余风险:
+Risk:
+Done:
 ```
 
-认真执行模式额外输出：
+### managed
 
-- `Workstreams`
-- `Round Status`
-- `Verification`
-- `Open Blockers`
+Use for tasks that need one owner, up to two advisors, and explicit state tracking.
 
-A/B 评估模式额外输出：
+Required output:
 
-- `Incumbent`
-- `Candidate`
-- `Test Set`
-- `Win/Loss Table`
-- `Gate Decision`
+```markdown
+Owner:
+Advisors:
 
-## 冲突处理
+Brain:
+Action:
+State:
+Review:
+```
 
-冲突规则放在 `references/conflict-resolution.md`。
-默认优先级：
+### package
 
-1. 代码、日志、测试、数据等直接证据
-2. 业务和行业事实
-3. 安全与可靠性风险
-4. 系统级 flow 和控制回路
-5. 产品优先级与风格判断
+Use for long-running, high-investment, or failure-sensitive tasks.
 
-没有硬性 veto 时，由 owner 拍板。
+Required output:
 
-## 参考文件导航
+```markdown
+Owner:
+Advisors:
 
-- `references/manager-agent-protocol.md`
-  - 需要 Brain / Hands 分离、执行契约、异步状态、重试、权限和观测指标时读
-- `references/role-routing-matrix.md`
-  - 需要选择 owner/advisors 时读
+Brain:
+Action:
+State:
+Review:
+Round Status:
+Verification:
+Open Blockers:
+Artifacts:
+```
+
+If the task is high-risk, add:
+
+```markdown
+Audit:
+```
+
+## Fixed State Slots
+
+`State` is not free-form prose.
+Use these slots:
+
+- `Input`
+- `Completed Actions`
+- `Current Blocker`
+- `Outputs`
+- `Waiting On`
+- `Residual Risks`
+
+Templates live in `references/serious-execution-templates.md`.
+
+## Audit Upgrade
+
+For high-risk tasks, read `references/audit-protocol.md` and append `Audit`.
+
+Audit must answer:
+
+- what resources were read
+- what objects were changed
+- what permissions were used
+- what actions were explicitly confirmed
+- what actions are irreversible
+
+## When To Use
+
+Use this skill when:
+
+- the user wants multi-role coordination
+- the user asks who should lead or who should support
+- the task spans product, research, implementation, operations, constraints, or reliability
+- the task needs explicit governance strength rather than ad hoc collaboration
+- the user asks for serious execution, full-package delivery, or multi-round review
+- the user wants to evaluate whether a new workflow or skill is actually better than the incumbent
+
+Do not use it for:
+
+- simple one-off answers
+- pure translation, rewriting, or summarization
+- tasks where a single domain skill is explicitly requested and no coordination is needed
+
+## Governance Flow
+
+1. Classify task mode
+2. Choose exactly one owner
+3. Add 0-2 advisors if needed
+4. Produce the owner judgment as `Brain`
+5. If execution is needed, define a `Hands` contract
+6. Produce `State` using fixed slots
+7. Produce `Review`
+8. If mode is `package`, also produce:
+   - `Round Status`
+   - `Verification`
+   - `Open Blockers`
+   - `Artifacts`
+9. If risk is high, append `Audit`
+
+## Role Routing
+
+Detailed mapping lives in `references/role-routing-matrix.md`.
+
+Keep the main discipline simple:
+
+- one owner only
+- advisors capped at 2
+- advisors patch blind spots
+- owner states what was accepted, rejected, and why
+
+## Manager-Agent Layering
+
+Read `references/manager-agent-protocol.md` when the task has:
+
+- long execution chains
+- noisy tool failures
+- retries
+- permission boundaries
+- asynchronous progress
+- explicit blocker management
+
+Short version:
+
+- `Brain` decides
+- `Hands` executes
+- `Review` verifies
+
+## Serious Execution
+
+`package` mode is the default home for serious execution.
+
+Read:
+
 - `references/serious-execution-protocol.md`
-  - 需要执行重型任务闭环时读
 - `references/serious-execution-templates.md`
-  - 需要可直接套用的 round、verification、blocker 模板时读
-- `references/conflict-resolution.md`
-  - 需要处理角色冲突和 veto 时读
+
+## A/B Evaluation
+
+When the user asks whether a candidate is actually better than the incumbent, read:
+
 - `references/ab-evaluation-protocol.md`
-  - 需要评估、迭代或 A/B 测试本 skill 或其他 skill 时读
+
+Use A/B mode to compare:
+
+- current protocol vs revised protocol
+- no-partner baseline vs partner-governed workflow
+- incumbent vs candidate skill behavior
+
+Do not claim improvement unless the candidate passes the gate.
+
+## Reference Navigation
+
+- `references/task-mode-classification.md`
+  - decide governance strength before routing roles
+- `references/manager-agent-protocol.md`
+  - separate Brain, Hands, and Review
+- `references/role-routing-matrix.md`
+  - choose owner and advisors
+- `references/conflict-resolution.md`
+  - resolve vetoes and tie-breaks
+- `references/serious-execution-protocol.md`
+  - run package-mode tasks end-to-end
+- `references/serious-execution-templates.md`
+  - use fixed templates for State, Verification, and delivery
+- `references/audit-protocol.md`
+  - add audit information for high-risk tasks
+- `references/ab-evaluation-protocol.md`
+  - compare incumbent vs candidate and enforce gates

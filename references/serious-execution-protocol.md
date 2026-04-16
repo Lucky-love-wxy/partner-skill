@@ -1,94 +1,125 @@
 # Serious Execution Protocol
 
-## 触发词
+## Purpose
 
-当用户明确说出这些表述时，进入重型执行模式：
+This protocol is for `package` mode.
+Use it when the task is too important, too long, too cross-cutting, or too failure-prone for lightweight coordination.
 
-- 这次任务较大认真执行
-- 完整执行
-- 不要只做其中一步
-- 一整包
-- 调查 + 修改 + 验证
-- 两轮 review
-- 连续执行
+## Trigger Signals
 
-## 核心原则
+Escalate to package mode when the user says things like:
 
-1. 不是建议模式，是交付模式
-2. 不是单步模式，是闭环模式
-3. 不是只写代码，是调查 + 修改 + 验证
-4. 不是一轮就停，至少两轮
-5. 不是让 Brain 直接执行工具，而是让 Hands 按契约执行
+- this is a large task
+- execute fully
+- do not stop at one step
+- end-to-end
+- investigation + change + verification
+- two review rounds
+- keep going until it is done
 
-## Manager-Agent 分层
+Also escalate when the task itself implies:
 
-认真执行模式必须按 `Brain / Hands / Review` 分层。
+- multiple workstreams
+- code plus tests plus documentation
+- long-running execution
+- visible blocker management
+- repeated review loops
 
-- `Brain` 负责判断任务包、分配 owner/advisors、定义成功标准
-- `Hands` 负责执行工具、处理状态、重试可恢复失败、返回干净失败码
-- `Review` 负责验证、回归、blocker 和残余风险
+## Package Defaults
 
-如果任务出现长链路、并行、权限、重试或异步状态，读取 `manager-agent-protocol.md`。
-如果需要固定输出结构，读取 `serious-execution-templates.md`。
+A package-mode task assumes the workflow may include:
 
-## 默认任务包
+- implementation
+- tests
+- CI or build repair
+- documentation updates
+- review loops
+- artifact tracking
 
-大任务默认检查这五类：
+Do not only perform the most convenient slice if the rest is likely to become a blocker.
 
-- 重构
-- 测试
-- CI
-- 文档
-- review
+## Required Output Blocks
 
-即使用户只点了其中一项，也要主动检查另外四项是否会成为 blocker。
+Package mode must include:
 
-## 两轮机制
+- `Brain`
+- `Action`
+- `State`
+- `Review`
+- `Round Status`
+- `Verification`
+- `Open Blockers`
+- `Artifacts`
+
+Add `Audit` for high-risk work.
+
+## Round Structure
 
 ### Round 1
 
-- 读代码和上下文
-- 做实现
-- 跑 build/test/lint
-- 做第一轮 review
+- read the relevant code and task context
+- implement or investigate
+- run validation
+- perform the first strict review
 
 ### Round 2
 
-- 修 review 问题
-- 再跑 build/test/lint
-- 做第二轮 review
+- fix review findings
+- rerun validation
+- perform the second review
 
-如果还有 blocker，进入 Round 3+，直到高优先级问题清空或遇到用户决策点。
+### Round 3+
 
-## 前端特殊规则
+Continue if:
 
-如果是前端任务：
+- high-priority blockers remain
+- validation still fails
+- review still finds issues
 
-- 优先读取截图、设计稿、报错图
-- 每轮都检查：
-  - 布局
-  - 交互
-  - 移动端
-  - 可访问性
-  - 与参考图差异
+Stop only when:
 
-## 并行规则
+- blockers are cleared
+- the remaining decision belongs to the user
+- or there is an explicit objective reason validation cannot continue
 
-只有在写域独立时并行。
+## Hands Discipline
 
-适合并行的工作流：
+Package mode should use Hands contracts by default.
 
-- 主实现 + 覆盖率补齐
-- PR 评论修复 + 文档更新
-- 前端样式修复 + a11y 检查
+If a Hands contract is not needed, say why explicitly.
 
-## 输出要求
+## Verification Discipline
 
-认真执行模式的输出必须包含：
+Every package-mode task should make verification visible.
 
-- 计划
-- 当前 round
-- 已做验证
-- 发现的新问题
-- 是否还存在 blocker
-- Hands 契约或说明为什么不需要 Hands 契约
+Minimum checks when relevant:
+
+- build
+- test
+- lint
+- manual confirmation when automation is not enough
+
+If validation cannot run:
+
+- explain why
+- state what substitute check was used
+- record the residual risk in `State` and `Review`
+
+## Artifact Discipline
+
+Artifacts are not just files.
+Artifacts may include:
+
+- changed code
+- reports
+- generated docs
+- evaluation tables
+- screenshots
+- release notes
+
+List them explicitly in `Artifacts`.
+
+## Audit Upgrade
+
+If the task is high-risk, package mode must append an `Audit` block.
+See `audit-protocol.md`.

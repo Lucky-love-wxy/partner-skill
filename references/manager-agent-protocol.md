@@ -1,54 +1,65 @@
 # Manager-Agent Protocol
 
-## 核心原则
+## First Principle
 
-把思考和执行拆开。
+Do not start with role routing.
+Start with task-mode classification.
 
-- `Brain` 负责推理、取舍、计划和拍板
-- `Hands` 负责工具执行、状态管理、重试、权限和失败码
-- `Review` 负责证据、回归、A/B 对比和残余风险
+The order is:
 
-不要把工具细节直接暴露给 Brain。
-Brain 只接收任务级能力、干净状态和失败摘要。
+1. classify governance strength
+2. choose the owner
+3. choose advisors if needed
+4. separate Brain, Hands, and Review
 
-## Brain 职责
+## Layer Model
 
-Brain 通常由 owner role 承担。
+- `Brain`: judgment, tradeoffs, escalation decisions, and success criteria
+- `Hands`: execution contracts, state transitions, retries, permissions, and failure handling
+- `Review`: verification, blockers, residual risk, and comparison against the intended target
 
-Brain 必须产出：
+These layers should not collapse into one free-form answer on larger tasks.
 
-- 任务目标
-- 成功标准
-- 当前假设
-- owner/advisor 选择理由
-- Hands 执行契约
-- 停止条件
+## Brain
 
-Brain 不直接处理：
+Brain is usually the owner role.
 
-- 原始 shell 噪声
-- 重试策略
-- 文件锁、超时、网络抖动
-- 权限细节
+Brain decides:
 
-这些属于 Hands。
+- what the task is really trying to achieve
+- which mode applies
+- what success looks like
+- which role should own the decision
+- whether advisors are needed
+- whether stronger review or audit is required
 
-## Hands 契约
+Brain should not:
 
-每个执行动作必须写成标准契约：
+- absorb raw shell noise
+- manage low-level retries
+- narrate tool chatter
+- impersonate every specialist at once
+
+## Hands
+
+Hands is the execution layer.
+Hands does not change goals.
+Hands runs contracts.
+
+Every Hands action should be expressible as:
 
 ```markdown
 Task:
 Input:
-Allowed write scope:
+Allowed Write Scope:
 Tools:
-Expected output:
+Expected Output:
 Validation:
-Failure codes:
-Retry policy:
+Failure Codes:
+Retry Policy:
 ```
 
-失败码使用固定集合：
+Recommended failure codes:
 
 - `blocked-by-permission`
 - `blocked-by-missing-context`
@@ -58,65 +69,89 @@ Retry policy:
 - `unsafe-scope`
 - `needs-brain-decision`
 
-Hands 可以重试工具层失败，但不能改变任务目标。
-如果重试后仍失败，只返回干净摘要，不把整段原始日志塞回 Brain。
+Hands may retry tool-level failures.
+Hands may not silently change the task objective.
 
-## 异步长任务
+## Review
 
-长任务不要绑定在单轮大推理里。
-使用状态切片：
+Review proves the state of the work.
+It is not a narrative epilogue.
 
-```markdown
-State:
-- phase:
-- current action:
-- completed:
-- failed:
-- next:
-- needs user:
-```
+Review should answer:
 
-用户应该尽早看到：
+- what was actually validated
+- what failed
+- what remains unresolved
+- what residual risk remains
+- whether escalation is needed
 
-- 当前计划
-- 进行到哪一阶段
-- 已验证什么
-- 是否需要用户决策
+If the task is in A/B mode, Review must also state whether the candidate passed the gate.
 
-## 安全边界
+## State Discipline
 
-默认最小权限。
+State is not free-form prose.
+Use fixed slots:
 
-- 文件写入必须限定范围
-- 网络访问必须有明确目的
-- 删除、覆盖、重置、发布必须先停下确认
-- 环境变量和密钥不进入普通输出
-- 执行层不能因为 Brain “很确定”就扩大权限
+- `Input`
+- `Completed Actions`
+- `Current Blocker`
+- `Outputs`
+- `Waiting On`
+- `Residual Risks`
 
-## 观测指标
+If the task is large, update State instead of rewriting it from scratch.
 
-至少追踪三组指标：
+## Mode Interaction
 
-- 首次有效反馈时间
-- 端到端完成率
-- 失败类型分布
+### quick
 
-认真执行模式额外追踪：
+- lightweight governance
+- minimal Review
+- no heavy Hands contract unless execution is non-trivial
 
-- 验证命令是否实际运行
-- review 问题是否闭环
-- blocker 是否被明确归因
-- 用户是否需要拍板
+### managed
 
-## 与 Partner Skill 的关系
+- one owner
+- 0-2 advisors
+- explicit Brain / Action / State / Review
+- Hands contract when execution matters
 
-`partner-skill` 的 owner/advisor 机制就是 Brain 选择器。
-`serious-execution-protocol` 是 Hands 执行层。
-`ab-evaluation-protocol` 是 Review / Comparator 层。
+### package
 
-这三层不能混在一起：
+- full Brain / Hands / Review split
+- round tracking
+- verification block
+- blocker block
+- artifacts block
+- audit block for high-risk work
 
-- owner 负责判断
-- advisor 负责补盲点
-- Hands 负责执行
-- Review 负责证明结果
+## Security and Control
+
+Safety belongs to execution control, not to optimistic planning.
+
+- use least privilege by default
+- keep write scopes explicit
+- do not hide irreversible actions
+- do not let Brain confidence override permission boundaries
+
+## Observability
+
+At minimum, track:
+
+- whether the user got a fast useful status update
+- whether the task reached end-to-end completion
+- what class of failure stopped progress
+
+For package mode, also track:
+
+- what round the work is in
+- what validations ran
+- whether blockers are waiting on the user or on the system
+
+## Partner-Skill Boundary
+
+`partner-skill` governs these layers.
+It does not become the layer itself for domain work.
+
+- owner roles provide the domain judgment
+- partner provides the governance frame

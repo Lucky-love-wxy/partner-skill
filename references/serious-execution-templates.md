@@ -1,98 +1,119 @@
 # Serious Execution Templates
 
-## Task Intake
+## Quick Template
 
 ```markdown
 Goal:
-Constraints:
-Success Criteria:
-Unknowns:
+- what must happen
+
+Action:
+- next step
+
+Risk:
+- main uncertainty or downside
+
+Done:
+- what is already finished
+```
+
+## Managed Template
+
+```markdown
 Owner:
 Advisors:
-Mode: coordination / serious-execution / A-B-evaluation
-```
 
-## Brain Decision
-
-```markdown
 Brain:
-- owner:
-- primary judgment:
-- accepted advisor input:
-- rejected advisor input:
-- why:
-- next decision point:
-```
+- goal:
+- facts:
+- assumptions:
+- tradeoff:
+- recommendation:
 
-## Hands Contract
-
-```markdown
-Hands Contract:
-- task:
-- input:
-- allowed write scope:
-- tools:
-- expected output:
+Action:
+- next step:
+- execution contract:
 - validation:
-- failure codes:
-- retry policy:
+
+State:
+- Input:
+- Completed Actions:
+- Current Blocker:
+- Outputs:
+- Waiting On:
+- Residual Risks:
+
+Review:
+- verified:
+- blocker:
+- residual risk:
+- next action:
 ```
 
-## Round Status
+## Package Template
 
 ```markdown
-Round Status:
-- round:
-- phase:
-- completed:
-- current blocker:
-- validation run:
-- needs user decision:
-```
+Owner:
+Advisors:
 
-## Verification
+Brain:
+- goal:
+- success criteria:
+- accepted reasoning:
+- rejected reasoning:
+- why:
 
-```markdown
-Verification:
-- build:
-- test:
-- lint:
-- manual check:
-- evidence:
-```
+Action:
+- current package:
+- execution contract:
+- validation plan:
 
-如果某项不能运行，必须写明：
+State:
+- Input:
+- Completed Actions:
+- Current Blocker:
+- Outputs:
+- Waiting On:
+- Residual Risks:
 
-- 为什么不能运行
-- 是否是环境限制
-- 替代验证是什么
-- 剩余风险是什么
-
-## Review
-
-```markdown
 Review:
 - findings:
 - fixed:
 - not fixed:
 - residual risk:
-- next action:
-```
+- escalation:
 
-## Final Delivery
-
-```markdown
-Brain:
-- final judgment:
-- tradeoff:
-
-Action:
-- changed:
-- validated:
+Round Status:
+- round:
+- phase:
+- complete:
 - next:
 
-Review:
-- blockers:
-- residual risks:
-- A/B status if relevant:
+Verification:
+- build:
+- test:
+- lint:
+- manual:
+- evidence:
+
+Open Blockers:
+- blocker:
+- owner:
+- unblock condition:
+
+Artifacts:
+- files:
+- reports:
+- screenshots:
+- notes:
+```
+
+## Audit Template
+
+```markdown
+Audit:
+- Resources Read:
+- Objects Changed:
+- Permissions Used:
+- Confirmed Actions:
+- Irreversible Actions:
 ```
