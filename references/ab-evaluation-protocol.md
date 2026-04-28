@@ -71,6 +71,7 @@ Use 0-2 scoring:
 
 Record any of these as hard failures:
 
+- role routing happens before mode classification
 - mode classification is clearly wrong
 - multiple owners speak as equals
 - advisors exceed 2

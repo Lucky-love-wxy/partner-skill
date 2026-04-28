@@ -36,11 +36,11 @@ Action:
 
 State:
 - Input:
-- Completed Actions:
-- Current Blocker:
+- CompletedActions:
+- CurrentBlocker:
 - Outputs:
-- Waiting On:
-- Residual Risks:
+- WaitingOn:
+- ResidualRisks:
 
 Review:
 - verified:
@@ -69,11 +69,11 @@ Action:
 
 State:
 - Input:
-- Completed Actions:
-- Current Blocker:
+- CompletedActions:
+- CurrentBlocker:
 - Outputs:
-- Waiting On:
-- Residual Risks:
+- WaitingOn:
+- ResidualRisks:
 
 Review:
 - findings:
@@ -107,6 +107,9 @@ Artifacts:
 - notes:
 ```
 
+State is mandatory for `managed` and `package`.
+For package mode, update the same State block across rounds instead of rewriting free-form.
+
 ## Audit Template
 
 ```markdown
@@ -116,4 +119,5 @@ Audit:
 - Permissions Used:
 - Confirmed Actions:
 - Irreversible Actions:
+- Trigger:
 ```

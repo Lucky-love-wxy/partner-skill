@@ -12,6 +12,8 @@ The order is:
 3. choose advisors if needed
 4. separate Brain, Hands, and Review
 
+Brain is the top-brain governance layer.
+
 ## Layer Model
 
 - `Brain`: judgment, tradeoffs, escalation decisions, and success criteria
@@ -93,12 +95,13 @@ State is not free-form prose.
 Use fixed slots:
 
 - `Input`
-- `Completed Actions`
-- `Current Blocker`
+- `CompletedActions`
+- `CurrentBlocker`
 - `Outputs`
-- `Waiting On`
-- `Residual Risks`
+- `WaitingOn`
+- `ResidualRisks`
 
+For `managed` and `package`, `State` is mandatory.
 If the task is large, update State instead of rewriting it from scratch.
 
 ## Mode Interaction
@@ -124,6 +127,16 @@ If the task is large, update State instead of rewriting it from scratch.
 - blocker block
 - artifacts block
 - audit block for high-risk work
+
+## Audit Trigger
+
+Require `Audit` when one or more of the following appear:
+
+- elevated permissions or privileged operations
+- irreversible actions
+- public release or externally visible impact
+- sensitive data or production resource access
+- safety-critical correctness requirements
 
 ## Security and Control
 

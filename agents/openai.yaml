@@ -1,7 +1,7 @@
 interface:
   display_name: "Partner Skill"
-  short_description: "Classify task mode, choose one owner, and govern Brain/Hands/Review"
-  default_prompt: "Use $partner-skill to classify the task as quick, managed, or package before routing any role. Then choose one owner, add up to two advisors if needed, govern execution through Brain/Hands/Review, and use A/B gates when evaluation is requested."
+  short_description: "Top-brain governance: classify mode, route one owner, enforce State/Audit controls"
+  default_prompt: "Use $partner-skill as the top-brain governance layer. First classify the task as quick, managed, or package before routing any role. Then choose exactly one owner, add up to two advisors if needed, enforce fixed-slot State for managed/package tasks, require Audit for high-risk work, and use A/B gates when evaluation is requested."
 
 policy:
   allow_implicit_invocation: true

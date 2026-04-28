@@ -1,6 +1,6 @@
 ---
 name: partner-skill
-description: Govern complex multi-role AI work by classifying task mode before routing skills. Use when the first decision should be governance strength rather than domain expertise. The skill chooses quick, managed, or package mode, selects one owner role, limits advisors to 0-2, governs execution through Brain/Hands/Review, and upgrades to A/B evaluation or audit when needed. Trigger when the user asks who should lead, who should collaborate, how to coordinate multiple roles, how to execute a task seriously end-to-end, or how to prove a candidate workflow is better than the incumbent.
+description: Govern complex multi-role AI work as a top-brain layer. Classify task mode before routing skills. Choose quick, managed, or package mode, select one owner role, limit advisors to 0-2, enforce State visibility on managed/package tasks, and require Audit on high-risk work. Trigger when the user asks who should lead, who should collaborate, how to coordinate multiple roles, how to execute a task seriously end-to-end, or how to prove a candidate workflow is better than the incumbent.
 ---
 
 # Partner Skill
@@ -10,6 +10,10 @@ description: Govern complex multi-role AI work by classifying task mode before r
 ## Core Position
 
 This is a governance skill.
+It acts as a top-brain layer over domain skills.
+
+Project-specific repo policy, long-running task artifacts, and private control-surface rules should live in the target repo.
+This public skill should only expose shared governance contracts and public evaluation surfaces.
 
 It is responsible for:
 
@@ -28,6 +32,14 @@ It is not responsible for:
 `Jobs`, `Kandle`, `Coding`, `Elon`, `Andy Grove`, `Goldratt`, and `Atul Gawande` own domain judgment.
 `partner-skill` governs the workflow around them.
 
+## V2 Non-Negotiable Rules
+
+1. Classify mode first. Do not route roles before mode is decided.
+2. Exactly one owner. Advisors are optional and capped at 2.
+3. `managed` and `package` must include `State` using fixed slots.
+4. High-risk work must include `Audit`.
+5. Do not claim completion without visible verification evidence.
+
 ## First Responsibility: Task-Mode Classification
 
 Before routing any role, classify the task into one of three modes:
@@ -41,6 +53,7 @@ Read `references/task-mode-classification.md` when the mode is not obvious.
 ### quick
 
 Use for low-complexity tasks with one owner, small process surface, and limited coordination cost.
+High-risk tasks should not remain in `quick`.
 
 Required output:
 
@@ -65,6 +78,12 @@ Brain:
 Action:
 State:
 Review:
+```
+
+For high-risk managed tasks, add:
+
+```markdown
+Audit:
 ```
 
 ### package
@@ -99,11 +118,11 @@ Audit:
 Use these slots:
 
 - `Input`
-- `Completed Actions`
-- `Current Blocker`
+- `CompletedActions`
+- `CurrentBlocker`
 - `Outputs`
-- `Waiting On`
-- `Residual Risks`
+- `WaitingOn`
+- `ResidualRisks`
 
 Templates live in `references/serious-execution-templates.md`.
 
@@ -118,6 +137,14 @@ Audit must answer:
 - what permissions were used
 - what actions were explicitly confirmed
 - what actions are irreversible
+
+High-risk signals include:
+
+- elevated permissions
+- irreversible operations
+- sensitive or production data
+- public release impact
+- safety-critical correctness requirements
 
 ## When To Use
 
@@ -142,7 +169,7 @@ Do not use it for:
 2. Choose exactly one owner
 3. Add 0-2 advisors if needed
 4. Produce the owner judgment as `Brain`
-5. If execution is needed, define a `Hands` contract
+5. If execution is needed, define an `Action` contract (Hands layer)
 6. Produce `State` using fixed slots
 7. Produce `Review`
 8. If mode is `package`, also produce:
@@ -177,7 +204,7 @@ Read `references/manager-agent-protocol.md` when the task has:
 Short version:
 
 - `Brain` decides
-- `Hands` executes
+- `Hands` executes through explicit `Action` contracts
 - `Review` verifies
 
 ## Serious Execution
@@ -208,7 +235,7 @@ Do not claim improvement unless the candidate passes the gate.
 - `references/task-mode-classification.md`
   - decide governance strength before routing roles
 - `references/manager-agent-protocol.md`
-  - separate Brain, Hands, and Review
+  - top-brain layering, Action contracts, and State discipline
 - `references/role-routing-matrix.md`
   - choose owner and advisors
 - `references/conflict-resolution.md`

@@ -21,6 +21,16 @@ Audit should answer:
 4. Which actions were explicitly confirmed?
 5. Which actions are irreversible?
 
+## Trigger Checklist
+
+If any item below is true, `Audit` is required:
+
+- elevated permissions were requested or used
+- irreversible actions were performed or prepared
+- public release path was affected
+- sensitive or production resources were touched
+- safety-critical correctness was a primary concern
+
 ## Output Format
 
 ```markdown

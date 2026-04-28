@@ -53,6 +53,8 @@ Package mode must include:
 
 Add `Audit` for high-risk work.
 
+In package mode, `State` is mandatory on every round and must keep fixed slots.
+
 ## Round Structure
 
 ### Round 1
@@ -81,6 +83,8 @@ Stop only when:
 - blockers are cleared
 - the remaining decision belongs to the user
 - or there is an explicit objective reason validation cannot continue
+
+Each round should update `State` first, then `Review`.
 
 ## Hands Discipline
 
@@ -123,3 +127,5 @@ List them explicitly in `Artifacts`.
 
 If the task is high-risk, package mode must append an `Audit` block.
 See `audit-protocol.md`.
+
+High-risk triggers include elevated permissions, irreversible actions, sensitive data, public release impact, and safety-critical correctness.

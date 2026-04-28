@@ -66,6 +66,8 @@ If you are unsure between two modes, choose the stronger one when:
 
 Otherwise choose the lighter mode.
 
+Long-running tasks should default to `package` unless the owner can explicitly prove a bounded `managed` scope.
+
 ## De-Escalation Rule
 
 If the task was initially classified as package but turns out to be much smaller:
@@ -91,3 +93,13 @@ Ask these questions mentally before choosing the mode:
 - `package` -> `Brain / Action / State / Review / Round Status / Verification / Open Blockers / Artifacts`
 
 Add `Audit` for high-risk tasks.
+
+## Hard-Failure Rules
+
+Treat these as protocol failures:
+
+- role routing starts before mode classification
+- `managed` or `package` output omits `State`
+- `State` is narrative prose instead of fixed slots
+- `package` output omits any required block
+- high-risk task omits `Audit`
